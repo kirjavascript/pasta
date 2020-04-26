@@ -1,51 +1,52 @@
-mod pasta;
+mod url;
+mod file;
 
-// pastaslut
-// limit size, limit qty (check after
-// named paste
-// take num chars as hash
-// utf8
-// codemirror??
+use warp::{http::Uri, Filter};
+use std::sync::Arc;
+use std::sync::Mutex;
 
-fn main() {
-    // dbg!(write_file("./data/test", "content"));
+#[tokio::main]
+async fn main() {
+    let hash = Arc::new(Mutex::new(url::UrlHash::new(1)));
 
-    let mut hash = pasta::UrlHash::new(2);
+    let homepage = warp::path::end().map(|| warp::reply::html(r#"
+        <textarea></textarea>
+        <button type="button">Submit</button>
+        <script>
+            const textarea = document.querySelector('textarea');
+            document.querySelector('button')
+                .addEventListener('click', async () => {
+                    window.location.href = (
+                        await fetch('/', { method: 'POST', body: textarea.value })
+                    ).url;
+                });
+        </script>
+    "#));
 
-    for _ in 0..20 {
-        println!("{}", hash.get());
-    }
 
-    // println!("{}", hash.get());
+    let post = warp::post()
+        .and(warp::path::end())
+        .and(warp::body::content_length_limit(1024 * 1024)) // 1MB limit
+        .and(warp::body::bytes())
+        .map(move |bytes: bytes::Bytes| {
+            let url = hash.lock().unwrap().next();
+            // let mut buffer = String::new();
+            // bytes.read_to_string(&mut buffer);
+            // println!("{:#?}", bytes.to_string());
+            bytes.into_iter().collect::<String>();
+            warp::redirect::redirect(Uri::from_static("/asdf"))
+        });
+
+    let pasta = warp::path!(String).map(|s| {
+        let html = match file::read(&format!("./data/{}", s)) {
+            Ok(contents) => format!("file: <pre>{}</pre>", contents),
+            Err(error) => format!("error: {}", error),
+        };
+        warp::reply::html(html)
+    });
+
+    let routes = warp::any()
+        .and(pasta.or(post).or(homepage));
+
+    warp::serve(routes).run(([127, 0, 0, 1], 8001)).await;
 }
-
-// use std::fs::{self, File};
-// use std::io::prelude::*;
-// use std::io::Error;
-// use std::path::Path;
-
-// // "".into();
-
-
-// pub fn write_raw(path: &str, data: &[u8]) -> Result<(), Error> {
-//     let path = Path::new(path);
-//     if let Some(parent) = path.parent() {
-//         fs::create_dir_all(parent)?;
-//     }
-//     let mut file = File::create(path)?;
-//     file.write_all(data)?;
-//     Ok(())
-// }
-
-// pub fn write_file(path: &str, data: &str) -> Result<(), Error> {
-//     write_raw(path, data.as_bytes())?;
-//     Ok(())
-// }
-
-// pub fn read_file(path: &str) -> Result<String, Error> {
-//     let path = Path::new(path);
-//     let mut file = File::open(path)?;
-//     let mut contents = String::new();
-//     file.read_to_string(&mut contents)?;
-//     Ok(contents.trim().to_string())
-// }

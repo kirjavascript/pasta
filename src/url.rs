@@ -1,4 +1,4 @@
-static URLCHARS: &str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._~";
+static URLCHARS: &str = "mDctrCgv7BJoNhdOWRlesYI28FfKEnx1uP0pGzb9jQUaH6-iLV_4Z.5kqTSM3ywAX~";
 
 pub struct UrlHash {
     index: usize,
@@ -13,11 +13,15 @@ impl UrlHash {
         }
     }
 
-    pub fn get(&mut self) -> String {
-        let length = URLCHARS.len();
-        let mut chars = URLCHARS.chars();
-        let mut index = self.index % (usize::pow(length, self.max_length));
+    pub fn next(&mut self) -> String {
+        let index = self.index;
         self.index += 1;
+        Self::get(index, self.max_length)
+    }
+
+    fn get(index: usize, max_length: u32) -> String {
+        let length = URLCHARS.len();
+        let mut index = index % length.pow(max_length);
 
         let indices = if index == 0 {
             vec![0]
