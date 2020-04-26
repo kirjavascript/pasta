@@ -1,7 +1,7 @@
 mod url;
 mod file;
 
-use warp::{http::Uri, Filter};
+use warp::{Filter};
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -16,13 +16,12 @@ async fn main() {
             const textarea = document.querySelector('textarea');
             document.querySelector('button')
                 .addEventListener('click', async () => {
-                    window.location.href = (
+                    window.location.href = await (
                         await fetch('/', { method: 'POST', body: textarea.value })
-                    ).url;
+                    ).text();
                 });
         </script>
     "#));
-
 
     let post = warp::post()
         .and(warp::path::end())
@@ -30,11 +29,9 @@ async fn main() {
         .and(warp::body::bytes())
         .map(move |bytes: bytes::Bytes| {
             let url = hash.lock().unwrap().next();
-            // let mut buffer = String::new();
-            // bytes.read_to_string(&mut buffer);
-            // println!("{:#?}", bytes.to_string());
-            bytes.into_iter().collect::<String>();
-            warp::redirect::redirect(Uri::from_static("/asdf"))
+            let content = std::str::from_utf8(&bytes).unwrap();
+            file::write(&format!("./data/{}", url), content).unwrap();
+            format!("/{}", url)
         });
 
     let pasta = warp::path!(String).map(|s| {
