@@ -2,16 +2,15 @@ mod url;
 mod file;
 
 use warp::{Filter};
-use std::sync::Arc;
-use std::sync::Mutex;
 
 #[tokio::main]
 async fn main() {
-    let hash = Arc::new(Mutex::new(url::UrlHash::new(1)));
+    let urls = url::Urls::new();
 
     let homepage = warp::path::end().map(|| warp::reply::html(r#"
         <textarea></textarea>
         <button type="button">Submit</button>
+        <pre>curl -X POST --data "some text" <span></span></pre>
         <script>
             const textarea = document.querySelector('textarea');
             document.querySelector('button')
@@ -20,6 +19,7 @@ async fn main() {
                         await fetch('/', { method: 'POST', body: textarea.value })
                     ).text();
                 });
+            document.querySelector('span').textContent = location.href;
         </script>
     "#));
 
@@ -28,7 +28,7 @@ async fn main() {
         .and(warp::body::content_length_limit(1024 * 1024)) // 1MB limit
         .and(warp::body::bytes())
         .map(move |bytes: bytes::Bytes| {
-            let url = hash.lock().unwrap().next();
+            let url = urls.next();
             let content = std::str::from_utf8(&bytes).unwrap();
             file::write(&format!("./data/{}", url), content).unwrap();
             format!("/{}", url)
