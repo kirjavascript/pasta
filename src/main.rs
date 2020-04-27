@@ -4,6 +4,7 @@ mod highlight;
 
 // TODO: cake.cx
 // TODO: line numbers / line selection / ranges
+// TODO: add filetypes select
 
 use warp::{Filter};
 
