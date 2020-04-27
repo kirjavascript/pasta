@@ -20,3 +20,19 @@ pub fn read(path: &str) -> Result<String, Error> {
     file.read_to_string(&mut contents)?;
     Ok(contents.trim().to_string())
 }
+
+pub fn basename(filename: &str) -> String {
+    Path::new(filename)
+        .file_stem()
+        .map(|s| s.to_os_string()
+            .into_string()
+            .unwrap_or_else(|_| filename.to_string()))
+        .unwrap_or_else(|| filename.to_string())
+}
+
+pub fn extension(filename: &str) -> Option<String> {
+    Path::new(filename)
+        .extension()
+        .map(|s| s.to_os_string().into_string().ok())
+        .flatten()
+}

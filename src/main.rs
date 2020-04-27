@@ -3,6 +3,7 @@ mod file;
 mod highlight;
 
 // TODO: cake.cx
+// TODO: line numbers / line selection / ranges
 
 use warp::{Filter};
 
@@ -26,9 +27,10 @@ async fn main() {
             }
         });
 
-    let pasta = warp::path!(String).map(|s| {
-        let html = match file::read(&format!("./data/{}", s)) {
-            Ok(content) => highlight::highlight(&content),
+    let pasta = warp::path!(String).map(|filename: String| {
+        let file = file::read(&format!("./data/{}", file::basename(&filename)));
+        let html = match file {
+            Ok(content) => highlight::highlight(&content, &filename),
             Err(error) => error.to_string().to_lowercase(),
         };
         warp::reply::html(html)
