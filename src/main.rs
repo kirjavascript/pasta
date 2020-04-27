@@ -17,15 +17,18 @@ async fn main() {
         .and(warp::body::bytes())
         .map(move |bytes: bytes::Bytes| {
             let url = urls.next();
-            let content = std::str::from_utf8(&bytes).unwrap();
-            file::write(&format!("./data/{}", url), content).unwrap();
-            format!("/{}", url)
+            let content = std::str::from_utf8(&bytes)
+                .unwrap_or_else(|_| "pls provide valid utf8");
+            match file::write(&format!("./data/{}", url), content) {
+                Ok(_) => format!("/{}", url),
+                Err(error) => error.to_string(),
+            }
         });
 
     let pasta = warp::path!(String).map(|s| {
         let html = match file::read(&format!("./data/{}", s)) {
             Ok(contents) => format!("file: <pre>{}</pre>", contents),
-            Err(error) => format!("error: {}", error),
+            Err(error) => error.to_string().to_lowercase(),
         };
         warp::reply::html(html)
     });

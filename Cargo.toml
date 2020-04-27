@@ -8,3 +8,4 @@ edition = "2018"
 warp = "0.2.2"
 bytes = "0.5"
 tokio = { version = "0.2", features = ["macros"] }
+syntect = "4.1"
