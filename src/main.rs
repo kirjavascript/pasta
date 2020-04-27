@@ -1,7 +1,8 @@
 mod url;
 mod file;
+mod highlight;
 
-// cake.cx
+// TODO: cake.cx
 
 use warp::{Filter};
 
@@ -27,7 +28,7 @@ async fn main() {
 
     let pasta = warp::path!(String).map(|s| {
         let html = match file::read(&format!("./data/{}", s)) {
-            Ok(contents) => format!("file: <pre>{}</pre>", contents),
+            Ok(content) => highlight::highlight(&content),
             Err(error) => error.to_string().to_lowercase(),
         };
         warp::reply::html(html)
