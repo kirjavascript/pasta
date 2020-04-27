@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>pastaslut</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                height: 100vh;
+                margin: 0;
+                padding: 10px;
+            }
+            textarea {
+                width: 100%;
+                height: 80%;
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <textarea></textarea>
+        <br />
+        <button type="button">make pasta</button>
+        <pre>$ curl -X POST --data "some text" <span></span></pre>
+        <script>
+            const textarea = document.querySelector('textarea');
+            document.querySelector('button')
+                .addEventListener('click', async () => {
+                    window.location.href = await (
+                        await fetch('/', { method: 'POST', body: textarea.value })
+                    ).text();
+                });
+            document.querySelector('span').textContent = location.href;
+        </script>
+    </body>
+</html>

@@ -1,27 +1,15 @@
 mod url;
 mod file;
 
+// cake.cx
+
 use warp::{Filter};
 
 #[tokio::main]
 async fn main() {
     let urls = url::Urls::new();
 
-    let homepage = warp::path::end().map(|| warp::reply::html(r#"
-        <textarea></textarea>
-        <button type="button">Submit</button>
-        <pre>curl -X POST --data "some text" <span></span></pre>
-        <script>
-            const textarea = document.querySelector('textarea');
-            document.querySelector('button')
-                .addEventListener('click', async () => {
-                    window.location.href = await (
-                        await fetch('/', { method: 'POST', body: textarea.value })
-                    ).text();
-                });
-            document.querySelector('span').textContent = location.href;
-        </script>
-    "#));
+    let homepage = warp::path::end().and(warp::fs::file("./html/index.html"));
 
     let post = warp::post()
         .and(warp::path::end())
@@ -42,8 +30,7 @@ async fn main() {
         warp::reply::html(html)
     });
 
-    let routes = warp::any()
-        .and(pasta.or(post).or(homepage));
+    let routes = warp::any().and(pasta.or(post).or(homepage));
 
     warp::serve(routes).run(([127, 0, 0, 1], 8001)).await;
 }
