@@ -19,6 +19,7 @@ pub fn highlight(content: &str, filename: &str) -> String {
                 <head>
                     <meta charset="UTF-8" />
                     <meta name="viewport" content="width=device-width" />
+                    <title>{}</title>
                 </head>
                 <style>
                     pre {{
@@ -30,5 +31,15 @@ pub fn highlight(content: &str, filename: &str) -> String {
                 {}
                 </body>
             </html>
-        "#, color.r, color.g, color.b, html)
+        "#, title(content), color.r, color.g, color.b, html)
+}
+
+fn title(content: &str) -> String {
+    let max_length = 200;
+    let title = content.replace("<", "&lt;").replace("&", "&amp;");
+    let mut title = title[..title.len().min(max_length)].to_string();
+    if title.len() == max_length {
+        title.push_str("...");
+    }
+    title
 }
