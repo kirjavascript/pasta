@@ -2,8 +2,6 @@ mod url;
 mod file;
 mod highlight;
 
-// TODO: respond with full url
-
 use warp::{Filter};
 
 #[tokio::main]
@@ -15,13 +13,15 @@ async fn main() {
     let post = warp::post()
         .and(warp::path::end())
         .and(warp::body::content_length_limit(1024 * 1024)) // 1MB limit
+        .and(warp::header::<String>("Host"))
         .and(warp::body::bytes())
-        .map(move |bytes: bytes::Bytes| {
+        .map(move |host: String, bytes: bytes::Bytes| {
             let url = urls.next();
             let content = std::str::from_utf8(&bytes)
                 .unwrap_or_else(|_| "pls provide valid utf8");
             match file::write(&format!("./data/{}", url), content) {
-                Ok(_) => format!("/{}", url),
+                // TODO: detect protocol
+                Ok(_) => format!("https://{}/{}", host, url),
                 Err(error) => error.to_string(),
             }
         });
