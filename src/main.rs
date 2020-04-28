@@ -12,6 +12,8 @@ use warp::{Filter};
 async fn main() {
     let urls = url::Urls::new();
 
+    highlight::_print_extensions();
+
     let homepage = warp::path::end().and(warp::fs::file("./html/index.html"));
 
     let post = warp::post()

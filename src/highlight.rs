@@ -4,6 +4,7 @@ use syntect::html::highlighted_html_for_string;
 
 pub fn highlight(content: &str, filename: &str) -> String {
     let syntax = SyntaxSet::load_defaults_newlines();
+
     let theme = ThemeSet::load_defaults();
 
     let theme = &theme.themes["base16-ocean.dark"];
@@ -36,10 +37,20 @@ pub fn highlight(content: &str, filename: &str) -> String {
 
 fn title(content: &str) -> String {
     let max_length = 200;
-    let title = content.replace("<", "&lt;").replace("&", "&amp;");
-    let mut title = title[..title.len().min(max_length)].to_string();
+    let mut title = content[..content.len().min(max_length)].to_string();
     if title.len() == max_length {
         title.push_str("...");
     }
-    title
+    title.replace("<", "&lt;").replace("&", "&amp;")
+}
+
+pub fn _print_extensions() {
+    println!("{}",
+        SyntaxSet::load_defaults_newlines()
+            .syntaxes()
+            .iter()
+            .map(|x| x.file_extensions.join(","))
+            .collect::<Vec<_>>()
+            .join(",")
+    );
 }
