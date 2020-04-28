@@ -3,16 +3,12 @@ mod file;
 mod highlight;
 
 // TODO: cake.cx
-// TODO: line numbers / line selection / ranges
-// TODO: add filetypes select
 
 use warp::{Filter};
 
 #[tokio::main]
 async fn main() {
     let urls = url::Urls::new();
-
-    highlight::_print_extensions();
 
     let homepage = warp::path::end().and(warp::fs::file("./html/index.html"));
 
