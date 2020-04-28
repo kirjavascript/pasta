@@ -85,7 +85,7 @@ pub fn highlighted_html_for_string(s: &str, ss: &SyntaxSet, syntax: &SyntaxRefer
 }
 
 fn title(content: &str) -> String {
-    let max_length = 200;
+    let max_length = 100;
     let mut title = content[..content.len().min(max_length)].to_string();
     if title.len() == max_length {
         title.push_str("...");

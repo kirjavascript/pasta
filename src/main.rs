@@ -2,8 +2,6 @@ mod url;
 mod file;
 mod highlight;
 
-// TODO: cake.cx
-
 use warp::{Filter};
 
 #[tokio::main]
