@@ -3,11 +3,14 @@ use syntect::parsing::{SyntaxSet, SyntaxReference};
 use syntect::highlighting::{Color, ThemeSet, Theme};
 use syntect::util::LinesWithEndings;
 use syntect::html::*;
+use once_cell::sync::Lazy;
+
+static SYNTAX_SET: Lazy<SyntaxSet> = Lazy::new(|| SyntaxSet::load_defaults_newlines());
+static THEME_SET: Lazy<ThemeSet> = Lazy::new(|| ThemeSet::load_defaults());
 
 pub fn highlight(content: &str, filename: &str) -> String {
-    let syntax = SyntaxSet::load_defaults_newlines();
-
-    let theme = ThemeSet::load_defaults();
+    let syntax = &SYNTAX_SET;
+    let theme = &THEME_SET;
 
     let theme = &theme.themes["base16-ocean.dark"];
     let extension = crate::file::extension(filename).unwrap_or_else(|| "txt".to_string());

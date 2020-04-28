@@ -2,6 +2,8 @@ mod url;
 mod file;
 mod highlight;
 
+// TODO: respond with full url
+
 use warp::{Filter};
 
 #[tokio::main]
@@ -35,5 +37,5 @@ async fn main() {
 
     let routes = warp::any().and(pasta.or(post).or(homepage));
 
-    warp::serve(routes).run(([127, 0, 0, 1], 8001)).await;
+    warp::serve(routes).run(([0, 0, 0, 0], 8001)).await;
 }
