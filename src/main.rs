@@ -14,10 +14,12 @@ async fn main() {
         .and(warp::path::end())
         .and(warp::body::content_length_limit(1024 * 1024)) // 1MB limit
         .and(warp::header::<String>("Host"))
+        .and(warp::header::optional::<String>("X-Forwarded-Host"))
         .and(warp::header::optional::<String>("X-Forwarded-Proto"))
         .and(warp::body::bytes())
-        .map(move |host: String, protocol: Option<String>, bytes: bytes::Bytes| {
+        .map(move |host: String, protocol: Option<String>, forwarded_host: Option<String>, bytes: bytes::Bytes| {
             let url = urls.next();
+            let host = forwarded_host.unwrap_or(host);
             let protocol = protocol.unwrap_or_else(|| "http".to_string());
             let content = std::str::from_utf8(&bytes)
                 .unwrap_or_else(|_| "pls provide valid utf8");
