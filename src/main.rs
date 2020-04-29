@@ -17,7 +17,12 @@ async fn main() {
         .and(warp::header::optional::<String>("X-Forwarded-Host"))
         .and(warp::header::optional::<String>("X-Forwarded-Proto"))
         .and(warp::body::bytes())
-        .map(move |host: String, protocol: Option<String>, forwarded_host: Option<String>, bytes: bytes::Bytes| {
+        .map(move |
+            host: String,
+            forwarded_host: Option<String>,
+            protocol: Option<String>,
+            bytes: bytes::Bytes,
+        | {
             let url = urls.next();
             let host = forwarded_host.unwrap_or(host);
             let protocol = protocol.unwrap_or_else(|| "http".to_string());
