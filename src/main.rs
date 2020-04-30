@@ -2,9 +2,6 @@ mod url;
 mod file;
 mod highlight;
 
-// TODO: vim &ft
-// TODO: netcat / vim examples
-
 use warp::{Filter};
 
 #[tokio::main]
