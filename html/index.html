@@ -49,9 +49,10 @@
                 .forEach(type => {
                     const option = document.createElement('option');
                     option.textContent = type;
-                    option.setAttribute('value', type);
                     if (type === 'txt') {
                         option.setAttribute('selected', true);
+                    } else {
+                        option.setAttribute('value', type);
                     }
                     select.appendChild(option);
                 });
