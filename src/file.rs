@@ -18,7 +18,7 @@ pub fn read(path: &str) -> Result<String, Error> {
     let mut file = File::open(path)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
-    Ok(contents.trim().to_string())
+    Ok(contents.to_string())
 }
 
 pub fn basename(filename: &str) -> String {

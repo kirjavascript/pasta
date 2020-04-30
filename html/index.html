@@ -18,23 +18,43 @@
                 height: 80%;
                 margin-bottom: 10px;
             }
+            select {
+                width: 80px;
+            }
         </style>
     </head>
     <body>
         <textarea></textarea>
         <br />
         <button type="button">make pasta</button>
-        <pre>$ curl -X POST --data "some text" <span></span></pre>
+        <select></select>
+        <pre>$ curl -X POST --data-binary "some text" <span></span></pre>
         <a href="https://github.com/kirjavascript/pastaslut">source</a>
         <script>
             const textarea = document.querySelector('textarea');
+            const select = document.querySelector('select');
             document.querySelector('button')
                 .addEventListener('click', async () => {
                     window.location.href = await (
                         await fetch('/', { method: 'POST', body: textarea.value })
-                    ).text();
+                    ).text() + `.${select.value}`;
                 });
             document.querySelector('span').textContent = location.href;
+
+            // attach filetypes
+            'txt,asa,asp,as,applescript,script editor,bat,cmd,build,cs,csx,cpp,cc,cp,cxx,c++,C,h,hh,hpp,hxx,h++,inl,ipp,c,h,css,css.erb,css.liquid,clj,d,di,diff,patch,erl,hrl,Emakefile,emakefile,yaws,go,dot,DOT,gv,groovy,gvy,gradle,html,htm,shtml,xhtml,inc,tmpl,tpl,hs,lhs,jsp,java,bsh,,properties,json,sublime-settings,sublime-menu,sublime-keymap,sublime-mousemap,sublime-theme,sublime-build,sublime-project,sublime-completions,sublime-commands,sublime-macro,sublime-color-scheme,js,htc,,bib,,tex,ltx,sty,cls,lisp,cl,clisp,l,mud,el,scm,ss,lsp,fasl,lua,,make,GNUmakefile,makefile,Makefile,OCamlMakefile,mak,mk,md,mdown,markdown,markdn,,matlab,ml,mli,mll,mly,,mm,M,h,m,h,,php,php3,php4,php5,php7,phps,phpt,phtml,pas,p,dpr,pl,pm,pod,t,PL,py,py3,pyw,pyi,pyx,pyx.in,pxd,pxd.in,pxi,pxi.in,rpy,cpy,SConstruct,Sconstruct,sconstruct,SConscript,gyp,gypi,Snakefile,wscript,,,R,r,s,S,Rprofile,rd,rails,rhtml,erb,html.erb,js.erb,haml,sass,rxml,builder,erbsql,sql.erb,re,rst,rest,rb,Appfile,Appraisals,Berksfile,Brewfile,capfile,cgi,Cheffile,config.ru,Deliverfile,Fastfile,fcgi,Gemfile,gemspec,Guardfile,irbrc,jbuilder,podspec,prawn,rabl,rake,Rakefile,Rantfile,rbx,rjs,ruby.rail,Scanfile,simplecov,Snapfile,thor,Thorfile,Vagrantfile,,rs,sql,ddl,dml,scala,sbt,sh,bash,zsh,fish,.bash_aliases,.bash_completions,.bash_functions,.bash_login,.bash_logout,.bash_profile,.bash_variables,.bashrc,.profile,.textmate_init,,,adp,tcl,textile,xml,xsd,xslt,tld,dtml,rss,opml,svg,yaml,yml,sublime-syntax'
+                .split(',')
+                .filter(d=> d && d[0] !== '.')
+                .sort()
+                .forEach(type => {
+                    const option = document.createElement('option');
+                    option.textContent = type;
+                    option.setAttribute('value', type);
+                    if (type === 'txt') {
+                        option.setAttribute('selected', true);
+                    }
+                    select.appendChild(option);
+                });
         </script>
     </body>
 </html>
