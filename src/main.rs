@@ -38,7 +38,7 @@ async fn main() {
         let file = file::read(&format!("./data/{}", file::basename(&filename)));
         let html = match file {
             Ok(content) => highlight::highlight(&content, &filename),
-            Err(error) => error.to_string().to_lowercase(),
+            Err(_) => "no such paste".to_string(),
         };
         warp::reply::html(html)
     });
@@ -53,7 +53,7 @@ async fn main() {
 
     let raw = warp::path!("raw" / String).map(|filename: String| {
         let file = file::read(&format!("./data/{}", file::basename(&filename)));
-        RawBody(file.unwrap_or_else(|err| format!("error: {}", err)))
+        RawBody(file.unwrap_or_else(|_| "no such paste".to_string()))
     });
 
     let routes = warp::any().and(pasta.or(raw).or(post).or(homepage));
