@@ -2,7 +2,7 @@ mod url;
 mod file;
 mod highlight;
 
-use warp::{Filter};
+use warp::Filter;
 
 #[tokio::main]
 async fn main() {
@@ -43,7 +43,21 @@ async fn main() {
         warp::reply::html(html)
     });
 
-    let routes = warp::any().and(pasta.or(post).or(homepage));
+    struct RawBody(String);
+
+    impl warp::Reply for RawBody {
+        fn into_response(self) -> warp::reply::Response {
+            warp::http::Response::new(self.0.into())
+        }
+    }
+
+    let raw = warp::path!("raw" / String).map(|filename: String| {
+        let file = file::read(&format!("./data/{}", file::basename(&filename)));
+        RawBody(file.unwrap_or_else(|err| format!("error: {}", err)))
+    });
+
+    let routes = warp::any().and(pasta.or(raw).or(post).or(homepage));
 
     warp::serve(routes).run(([0, 0, 0, 0], 8001)).await;
+
 }

@@ -9,10 +9,10 @@ pub struct Urls(Arc<AtomicUsize>);
 
 impl Urls {
     pub fn new() -> Self {
-        Self(Arc::new(AtomicUsize::new(0)))
+        Self(Arc::new(AtomicUsize::new(URLCHARS.len().pow(2))))
     }
     pub fn next(&self) -> String {
-        hash(self.0.fetch_add(1, Ordering::SeqCst), 1)
+        hash(self.0.fetch_add(1, Ordering::SeqCst), 3)
     }
 }
 
