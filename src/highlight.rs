@@ -30,6 +30,7 @@ pub fn highlight(content: &str, filename: &str) -> String {
                 <head>
                     <meta charset="UTF-8" />
                     <meta name="viewport" content="width=device-width" />
+                    <meta name="title" content="pasta" />
                     <title>{}</title>
                 </head>
                 <style>
