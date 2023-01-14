@@ -38,23 +38,14 @@ async fn main() {
         let file = file::read(&format!("./data/{}", file::basename(&filename)));
         let html = match file {
             Ok(content) => highlight::highlight(&content, &filename),
-            Err(error) => error.to_string().to_lowercase(),
+            Err(_) => "no such paste".to_string(),
         };
         warp::reply::html(html)
     });
 
-    struct RawBody(String);
-
-    impl warp::Reply for RawBody {
-        fn into_response(self) -> warp::reply::Response {
-            warp::http::Response::new(self.0.into())
-        }
-    }
-
     let raw = warp::path!("raw" / String).map(|filename: String| {
         let file = file::read(&format!("./data/{}", file::basename(&filename)));
-        // RawBody(file.unwrap_or_else(|err| format!("error: {}", err)))
-        let body = file.unwrap_or_else(|err| format!("error: {}", err));
+        let body = file.unwrap_or_else(|_| "no such paste".to_string());
         warp::http::Response::builder()
             .header("Content-Type", "text/plain")
             .body(body)
