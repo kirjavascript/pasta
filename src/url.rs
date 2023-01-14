@@ -12,7 +12,7 @@ impl Urls {
         Self(Arc::new(AtomicUsize::new(URLCHARS.len().pow(2))))
     }
     pub fn next(&self) -> String {
-        hash(self.0.fetch_add(1, Ordering::SeqCst), 3)
+        hash(self.0.fetch_add(1, Ordering::SeqCst), 1)
     }
 }
 

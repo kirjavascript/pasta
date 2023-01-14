@@ -53,7 +53,11 @@ async fn main() {
 
     let raw = warp::path!("raw" / String).map(|filename: String| {
         let file = file::read(&format!("./data/{}", file::basename(&filename)));
-        RawBody(file.unwrap_or_else(|err| format!("error: {}", err)))
+        // RawBody(file.unwrap_or_else(|err| format!("error: {}", err)))
+        let body = file.unwrap_or_else(|err| format!("error: {}", err));
+        warp::http::Response::builder()
+            .header("Content-Type", "text/plain")
+            .body(body)
     });
 
     let routes = warp::any().and(pasta.or(raw).or(post).or(homepage));
